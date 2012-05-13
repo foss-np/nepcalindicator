@@ -1,22 +1,24 @@
-Nepali Calendar Gnome Panel Applet
+Nepali Calendar Unity Indicator
 ----------------------------------
 
-Displays current Nepali date in Gnome Panel.
+Displays current Nepali date in Unity Panel.
 
 
 INSTALLATION
 ------------
-Download the tarball: https://github.com/jwalanta/nepcalapplet/tarball/master
+Download the tarball: https://github.com/sagarchalise/nepcalindicator/tarball/master
 
-Install python-gnomeapplet:
-$ sudo apt-get install python-gnomeapplet
+Install python-appindicator:
+$ sudo apt-get install python-appindicator
 
 $ chmod a+x install.sh
 $ sudo ./install.sh
 
+EXTRAS
+------
+
+If you need a converter. You can use https://launchpad.net/nepdate. Which is integrated as converter menu as well.
 
 USAGE
 -----
-- Right-click Gnome Panel
-- Add to Panel
-- Choose Nepali Calendar and click Add
+- Just run nepcalindicator.
