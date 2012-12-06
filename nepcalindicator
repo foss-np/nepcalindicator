@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 import sys
-import gtk
-import appindicator
+from gi.repository import AppIndicator3 as AppIndicator
+from gi.repository import Gtk
 import datetime
 import os
 import subprocess
@@ -332,27 +332,27 @@ def contents_func():
 
 class NepaliDateIndicator:
     def __init__(self):
-        self.indicator = appindicator.Indicator("nepali-date-indicator",
+        self.indicator = AppIndicator.Indicator.new("nepali-date-indicator",
                                            "",
-                                           appindicator.CATEGORY_OTHER)
-        self.indicator.set_status(appindicator.STATUS_ACTIVE)
+                                           AppIndicator.IndicatorCategory.OTHER)
+        self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.menu_setup()
         self.indicator.set_menu(self.menu)
 
     def menu_setup(self):
-        self.menu = gtk.Menu()
-        self.nepdateconverter = gtk.MenuItem("Convert Dates")
+        self.menu = Gtk.Menu()
+        self.nepdateconverter = Gtk.MenuItem("Convert Dates")
         self.nepdateconverter.connect("activate", self.nepdate)
         self.nepdateconverter.show()
-        self.quit_item = gtk.MenuItem("Quit")
+        self.quit_item = Gtk.MenuItem("Quit")
         self.quit_item.connect("activate", self.quit)
         self.quit_item.show()
 
     def main(self):
-        self.indicator.set_label(contents_func())
+        self.indicator.set_label(contents_func(), "")
         self.menu.append(self.nepdateconverter)
         self.menu.append(self.quit_item)
-        gtk.main()
+        Gtk.main()
 
     def quit(self, widget):
         sys.exit(0)
@@ -361,7 +361,7 @@ class NepaliDateIndicator:
         try:
             subprocess.call("nepdate")
         except:
-            dialog = gtk.MessageDialog()
+            dialog = Gtk.MessageDialog()
             dialog.set_markup('''You must install nepdate found here:
             <span foreground="blue">https://launchpad.net/~shriteshb/+archive/nepdate</span>''')
             dialog.show()
