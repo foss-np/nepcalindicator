@@ -13,7 +13,7 @@ I have added a code to handle the exception, so when it is started from commandl
 
 INSTALLATION
 ------------
-Download the tarball: https://github.com/samundra/nepcalindicator/archive/master.zip
+Download the tarball: https://github.com/foss-np/nepcalindicator/archive/master.zip
 
 Install python-appindicator:
 -------------------------------
