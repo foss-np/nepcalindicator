@@ -3,7 +3,9 @@ Nepali Calendar Unity Indicator
 
 Displays current Nepali date in Unity Panel.
 
-Origin author are 
+Initially project started by jwalanta as gnome applet and then ported to gtk3 by sagarchalise.
+
+I have added a code to handle the exception, so when it is started from commandline. It gets quit gracefully.
 
 **Indicator in Action**
 
