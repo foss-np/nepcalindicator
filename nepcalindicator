@@ -307,13 +307,10 @@ class NepaliDateConverter:
                 return self.add_bs_days(self.bs_equiv, date_delta)
 
 def eng2nepnum(n):
-    nums = {"0":"०","1":"१","2":"२","3":"३","4":"४","5":"५","6":"६","7":"७","8":"८","9":"९"}
+    nums = {'0': "०","1":"१","2":"२","3":"३","4":"४","5":"५","6":"६","7":"७","8":"८","9":"९"}
     numstr = str(n)
-    s = ""
     for ch in numstr:
-        s += nums[ch]
-
-    return s
+        yield nums[ch]
 
 
 def contents_func():
@@ -323,16 +320,16 @@ def contents_func():
     (y,m,d)= converter.ad2bs((now.year, now.month, now.day))
     day = now.strftime("%a")
 
-    nepday = {'Sun': 'आइतवार', 'Mon': 'सोमवार', 'Tue':'मंगलवार',
-                'Wed':'बुधवार', 'Thu': 'बिहिवार', 'Fri': 'शुक्रवार', 'Sat': 'शनिवार'}
+    nepday = {'Sun': 'आइत', 'Mon': 'सोम', 'Tue':'मंगल',
+                'Wed':'बुध', 'Thu': 'बिहि', 'Fri': 'शुक्र', 'Sat': 'शनि'}
 
     if day in nepday:
         nd = nepday[day]
 
-    nepmonths = {1: "बैशाख", 2: "जेठ", 3: "असार", 4:"श्रावण", 5:"भाद्र", 6:"असोज",
+    nepmonths = {1: "बैशाख", 2: "जेष्ठ", 3: "असार", 4:"श्रावण", 5:"भाद्र", 6:"असोज",
                 7:"कार्तिक", 8:"मंसिर", 9:"पौष", 10:"माघ", 11:"फाल्गुन", 12:"चैत्र"}
 
-    return "%s %s %s, %s" % (eng2nepnum(d), nepmonths[m], eng2nepnum(y), nd)
+    return "%s %s %s, %s" % ("".join(eng2nepnum(d)), nepmonths[m], "".join(eng2nepnum(y)), nd)
 
 class NepaliDateIndicator:
     def __init__(self):
