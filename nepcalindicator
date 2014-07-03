@@ -334,7 +334,7 @@ def contents_func():
 class NepaliDateIndicator:
     def __init__(self):
         self.indicator = AppIndicator.Indicator.new("nepali-date-indicator",
-                                           "",
+                                           "calendar-tray",
                                            AppIndicator.IndicatorCategory.OTHER)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.menu_setup()
