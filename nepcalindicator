@@ -9,11 +9,11 @@ except ImportError:
     from gi.repository import AppIndicator
 from gi.repository import Gtk
 import datetime
-import os
-import subprocess
+import calendar
 
 ### BEGIN LICENSE
 # Copyright (C) 2011 Shritesh Bhattarai shriteshb@gmail.com
+# Copyright (C) 2014 Sagar Chalise  <chalisesagar AT  gmail  DOT com>
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
 # by the Free Software Foundation.
@@ -149,7 +149,8 @@ class NepaliDateConverter:
     bs[2098]=(31,31,32,31,31,31,29,30,29,30,29,31)
     bs[2099]=(31,31,32,31,31,31,30,29,29,30,30,30)
 
-    def date_from_tuple(self,tuple_to_convert):
+    @staticmethod
+    def date_from_tuple(tuple_to_convert):
         '''
         Returns the given tuple as datetime.date object
 
@@ -159,16 +160,18 @@ class NepaliDateConverter:
         (year, month, day) = tuple_to_convert
         return datetime.date(year,month,day)
 
-    def tuple_from_date(self,date_to_convert):
+    @staticmethod
+    def tuple_from_date(date_to_convert):
         '''
         Returns the given date object as tuple in the format (year,month,day)
 
         date_to_convert : A date object
 
         '''
-        (year, month, day)  = (date_to_convert.year, date_to_convert.month, date_to_convert.day)
-        return (year, month, day)
-
+        if not isinstance(date_to_convert, (datetime.date, datetime.datetime)):
+            raise ValueError("date_to_convert should be date object")
+        return (date_to_convert.year, date_to_convert.month, date_to_convert.day)
+        
     def count_ad_days(self,begin_ad_date,end_ad_date):
         '''
         Returns the number of days between the two given A.D. dates.
@@ -273,7 +276,7 @@ class NepaliDateConverter:
                 year = year + 1
         return (year, month, day)
 
-    def bs2ad(self,bs_date):
+    def bs_to_ad(self, bs_date):
         '''
         Returns the A.D. equivalent date as a tuple in the format (year,month,day) if the date is within range, else returns None
 
@@ -281,56 +284,145 @@ class NepaliDateConverter:
 
         '''
         (year, month, day) = bs_date
-        if year < 2000 or year > 2099 or month < 1 or month > 12 or day < 1 or day > 32:
-            return None
-        else:
-            if year == 2000 and month == 9 and day < 17:
-                return None
-            else:
-                date_delta = self.count_bs_days(self.bs_equiv, bs_date)
-                return self.add_ad_days(self.ad_equiv, date_delta)
+        if (year not in range(2000, 2099) or month not in range(1, 12) or day not in range(1, 32)) or not (year == 2000 and month == 9 and day < 17):
+            date_delta = self.count_bs_days(self.bs_equiv, bs_date)
+            return self.add_ad_days(self.ad_equiv, date_delta)
 
-    def ad2bs(self,ad_date):
+    def ad_to_bs(self, ad_date):
         '''
         Returns the B.S. equivalent date as a tuple in the format (year,month,day) if the date is within range, else returns None
 
         bs_date : An tuple in the format (year,month,day)
         '''
         (year, month, day) = ad_date
-        if year < 1944 or year > 2043 or month < 1 or month > 12 or day < 1 or day > 31:
-            return None
-        else:
-            if year == 2043 and month == 4 and day > 13:
-                return None
-            else:
-                date_delta = self.count_ad_days(self.ad_equiv, ad_date)
-                return self.add_bs_days(self.bs_equiv, date_delta)
+        if (year in range(1944, 2043) or month in range(1, 12) or day in range(1, 31)) or not (year == 2043 and month == 4 and day > 13):
+            day = self.date_from_tuple(ad_date).strftime("%a")
+            date_delta = self.count_ad_days(self.ad_equiv, ad_date)
+            return self.add_bs_days(self.bs_equiv, date_delta) + (day,)
 
-def eng2nepnum(n):
-    nums = {'0': "०","1":"१","2":"२","3":"३","4":"४","5":"५","6":"६","7":"७","8":"८","9":"९"}
-    numstr = str(n)
-    for ch in numstr:
-        yield nums[ch]
+    @staticmethod
+    def eng_to_nep_num(n):
+        nums = {'0': "०", '1': "१", '2': "२", '3': "३", '4': "४", '5': "५", '6': "६", '7': "७", '8': "८", '9': "९"}
+        numstr = str(n)
+        for ch in numstr:
+            yield nums[ch]
 
+    def get_today_bs(self):
+        return self.ad_to_bs(self.get_today_ad())
 
-def contents_func():
+    def get_today_ad(self):
+        return self.tuple_from_date(datetime.datetime.now())
 
-    converter = NepaliDateConverter()
-    now = datetime.datetime.now()
-    (y,m,d)= converter.ad2bs((now.year, now.month, now.day))
-    day = now.strftime("%a")
+    @staticmethod
+    def get_total_day_of_month_ad(year, month):
+        return calendar.monthrange(year, month)[1]
 
-    nepday = {'Sun': 'आइत', 'Mon': 'सोम', 'Tue':'मंगल',
+    @staticmethod
+    def get_total_day_of_month_bs(year, month):
+        return NepaliDateConverter.bs[year][month-1]
+   
+    def get_today_bs_label(self, short=False):
+        nepday = None
+        if short:
+            nepday = {'Sun': 'आइत', 'Mon': 'सोम', 'Tue':'मंगल',
                 'Wed':'बुध', 'Thu': 'बिहि', 'Fri': 'शुक्र', 'Sat': 'शनि'}
+        today = self.get_date_bs_label(self.get_today_bs(), nepday)
+        return today
 
-    if day in nepday:
-        nd = nepday[day]
-
-    nepmonths = {1: "बैशाख", 2: "जेष्ठ", 3: "असार", 4:"श्रावण", 5:"भाद्र", 6:"असोज",
+    def get_date_bs_label(self, date_tuple, nepday=None):
+        if nepday is None:
+            nepday = {'Sun': 'आइतवार', 'Mon': 'सोमवार', 'Tue':'मंगलवार',
+                'Wed':'बुधवार', 'Thu': 'बिहिवार', 'Fri': 'शुक्रवार', 'Sat': 'शनिवार'}
+        (y, m, d, dd) = date_tuple
+        day = nepday.get(dd)
+        nepmonths = {1: "बैशाख", 2: "जेष्ठ", 3: "असार", 4:"श्रावण", 5:"भाद्र", 6:"असोज",
                 7:"कार्तिक", 8:"मंसिर", 9:"पौष", 10:"माघ", 11:"फाल्गुन", 12:"चैत्र"}
+        return "{0} {1} {2}, {3}".format("".join(self.eng_to_nep_num(d)), nepmonths[m], "".join(self.eng_to_nep_num(y)), day)
 
-    return "%s %s %s, %s" % ("".join(eng2nepnum(d)), nepmonths[m], "".join(eng2nepnum(y)), nd)
+    def get_date_ad_label(self, date_tuple):
+        return self.date_from_tuple(date_tuple).strftime("%A %-d %B, %Y")
 
+    @staticmethod
+    def get_today_ad_label():
+        return datetime.datetime.now().strftime("%A %-d %B, %Y")
+        
+
+        
+
+class ConverterDialog(Gtk.Dialog):
+    def __init__(self, title, adjustments):
+        Gtk.Dialog.__init__(self, title, None, 1)
+        self.set_default_size(200, 200)
+        button = Gtk.Button("_Close", use_underline=True)
+        button.connect("clicked", self.on_close_clicked)
+        self.box = self.get_content_area()
+        year_adj, month_adj, self.day_adj = adjustments
+        year_label = Gtk.Label("Year")
+        self.spinbutton_year = Gtk.SpinButton()
+        self.spinbutton_year.set_numeric(True)
+        self.spinbutton_year.set_update_policy(1)
+        self.spinbutton_year.set_adjustment(year_adj)
+        self.spinbutton_year.set_value(int(year_adj.get_value()))
+        self.box.add(year_label)
+        self.box.add(self.spinbutton_year)
+        month_label = Gtk.Label("Month")
+        self.spinbutton_month = Gtk.SpinButton()
+        self.spinbutton_month.set_numeric(True)
+        self.spinbutton_month.set_update_policy(1)
+        self.spinbutton_month.set_adjustment(month_adj)
+        self.spinbutton_month.set_value(int(month_adj.get_value()))
+        self.box.add(month_label)
+        self.box.add(self.spinbutton_month)
+        day_label = Gtk.Label("Day")
+        self.spinbutton_day = Gtk.SpinButton()
+        self.spinbutton_day.set_numeric(True)
+        self.spinbutton_day.set_update_policy(1)
+        self.spinbutton_day.set_adjustment(self.day_adj)
+        self.spinbutton_day.set_value(int(self.day_adj.get_value()))
+        self.box.add(day_label)
+        self.box.add(self.spinbutton_day)
+        self.spinbutton_year.connect("changed", self.show_converted_date)
+        self.spinbutton_month.connect("changed", self.show_converted_date)
+        self.spinbutton_day.connect("changed", self.show_converted_date)
+        self.converter = NepaliDateConverter()
+        self.get_range_of_year = self.spinbutton_year.get_range()
+        self.date_label = Gtk.Label()
+        self.date_label.set_selectable(True)
+        self.ad_to_bs = False
+        value = self.converter.get_today_ad_label()
+        if  int(min(self.get_range_of_year)) == 1944:
+            self.ad_to_bs = True
+            value  = self.converter.get_today_bs_label()
+        self.date_label.set_markup('<span foreground="blue" size="large">%s</span>' % value)
+        self.box.pack_start(Gtk.HSeparator(), True, True, 1)
+        self.box.pack_start(Gtk.HSeparator(), True, True, 1)
+        self.box.add(self.date_label)
+        self.box.pack_start(Gtk.HSeparator(), True, True, 1)
+        self.box.pack_start(Gtk.HSeparator(), True, True, 1)
+        self.box.pack_start(button, True, True, 1)
+        self.show_all()
+        
+        
+    def show_converted_date(self, button):
+        year_value =  self.spinbutton_year.get_value_as_int()
+        month_value =  self.spinbutton_month.get_value_as_int()
+        day_value =  self.spinbutton_day.get_value_as_int()
+        if self.ad_to_bs:
+            upper_day = self.converter.get_total_day_of_month_ad(year_value, month_value)
+            self.day_adj.set_upper(float(upper_day))
+            ad_to_bs_tuple = self.converter.ad_to_bs((year_value, month_value, min(day_value, upper_day)))
+            value = self.converter.get_date_bs_label(ad_to_bs_tuple) if  ad_to_bs_tuple else self.converter.get_today_bs_label()
+        else:
+            upper_day = self.converter.get_total_day_of_month_bs(year_value, month_value)
+            self.day_adj.set_upper(float(upper_day))
+            bs_to_ad_tuple = self.converter.bs_to_ad((year_value, month_value, min(day_value, upper_day))) 
+            value = self.converter.get_date_ad_label(bs_to_ad_tuple) if bs_to_ad_tuple else self.converter.get_today_ad_label()
+        self.spinbutton_day.set_value(min(day_value, upper_day))
+        self.date_label.set_markup('<span foreground="blue" size="large">%s</span>' % value)
+
+    def on_close_clicked(self, button):
+        self.destroy()
+        
 class NepaliDateIndicator:
     def __init__(self):
         self.indicator = AppIndicator.Indicator.new("nepali-date-indicator",
@@ -342,33 +434,47 @@ class NepaliDateIndicator:
 
     def menu_setup(self):
         self.menu = Gtk.Menu()
-        self.nepdateconverter = Gtk.MenuItem("Convert Dates")
-        self.nepdateconverter.connect("activate", self.nepdate)
-        self.nepdateconverter.show()
+        self.to_ad_menu = Gtk.MenuItem("Convert Dates To AD.")
+        self.to_bs_menu = Gtk.MenuItem("Convert Dates To BS.")
+        self.to_ad_menu.connect("activate", self.to_ad)
+        self.to_bs_menu.connect("activate", self.to_bs)
+        self.to_ad_menu.show()
+        self.to_bs_menu.show()
         self.quit_item = Gtk.MenuItem("Quit")
         self.quit_item.connect("activate", self.quit)
         self.quit_item.show()
 
     def main(self):
-        self.indicator.set_label(contents_func(), "")
-        self.menu.append(self.nepdateconverter)
+        self.nep_date = NepaliDateConverter()
+        self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
+        self.menu.append(self.to_ad_menu)
+        self.menu.append(self.to_bs_menu)
         self.menu.append(self.quit_item)
         Gtk.main()
 
     def quit(self, widget):
+        widget.destroy()
         sys.exit(0)
 
-    def nepdate(self, widget):
-        try:
-            subprocess.call("nepdate")
-        except OSError as e:
-            dialog = Gtk.MessageDialog()
-            if e.errno == 13:
-                dialog.format_secondary_text(e.strerror)
-            elif e.errno == 2:
-                dialog.set_markup('''You must install nepdate found here:
-                    <span foreground="blue">https://launchpad.net/~shriteshb/+archive/nepdate</span>''')
-            dialog.show()
+    def create_window(self, title, adjustments, widget):
+        win = ConverterDialog(title, adjustments)
+        win.connect("delete-event", Gtk.main_quit)
+        win.show_all()
+        Gtk.main()
+        
+    def to_bs(self, widget):
+        today_ad_year, today_ad_month, today_ad_day = self.nep_date.get_today_ad()
+        year_adjustment = Gtk.Adjustment(today_ad_year, 1944, 2043, 1, 10, 0)
+        month_adjustment = Gtk.Adjustment(today_ad_month, 1, 12, 1, 10, 0)
+        day_adjustment = Gtk.Adjustment(today_ad_day, 1, 31, 1, 10, 0)
+        self.create_window("Convert To B.S", (year_adjustment, month_adjustment,  day_adjustment), widget)
+        
+    def to_ad(self, widget):
+        today_bs_year, today_bs_month, today_bs_day, day_name = self.nep_date.get_today_bs()
+        year_adjustment = Gtk.Adjustment(today_bs_year, 2000, 2099, 1, 10, 0)
+        month_adjustment = Gtk.Adjustment(today_bs_month, 1, 12, 1, 10, 0)
+        day_adjustment = Gtk.Adjustment(today_bs_day, 1, 32, 1, 10, 0)
+        self.create_window("Convert To A.D", (year_adjustment, month_adjustment,  day_adjustment), widget)
 
 if __name__ == "__main__":
     indicator = NepaliDateIndicator()

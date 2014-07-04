@@ -36,11 +36,12 @@ $ nepcalindicator &
 ```
 or just execute from path of nepcalindicator.
 
-### Extra
-
 #### Convertor
 
-If you need a converter. You can use https://launchpad.net/nepdate. Which is integrated as converter menu as well.
+ - AD To BS
+ - BS To AD
+
+Embedded as  dialog window in menu
 
 
 #### Autostart indicator at Startup
