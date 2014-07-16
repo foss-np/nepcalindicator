@@ -314,12 +314,11 @@ class NepaliDateConverter:
         return self.tuple_from_date(datetime.datetime.now())
 
     @staticmethod
-    def get_total_day_of_month_ad(year, month):
-        return calendar.monthrange(year, month)[1]
-
-    @staticmethod
-    def get_total_day_of_month_bs(year, month):
-        return NepaliDateConverter.bs[year][month-1]
+    def get_total_day_of_month(year, month, is_ad=True):
+        if is_ad:
+            return calendar.monthrange(year, month)[1]
+        else:
+            return NepaliDateConverter.bs[year][month-1]
    
     def get_today_bs_label(self, short=False):
         nepday = None
@@ -408,14 +407,12 @@ class ConverterDialog(Gtk.Dialog):
         year_value =  self.spinbutton_year.get_value_as_int()
         month_value =  self.combobox_month.get_model()[self.combobox_month.get_active_iter()][0]
         day_value =  self.spinbutton_day.get_value_as_int()
+        upper_day = self.converter.get_total_day_of_month(year_value, month_value, self.ad_to_bs)
+        self.day_adj.set_upper(float(upper_day))
         if self.ad_to_bs:
-            upper_day = self.converter.get_total_day_of_month_ad(year_value, month_value)
-            self.day_adj.set_upper(float(upper_day))
             ad_to_bs_tuple = self.converter.ad_to_bs((year_value, month_value, min(day_value, upper_day)))
             value = self.converter.get_date_bs_label(ad_to_bs_tuple) if  ad_to_bs_tuple else self.converter.get_today_bs_label()
         else:
-            upper_day = self.converter.get_total_day_of_month_bs(year_value, month_value)
-            self.day_adj.set_upper(float(upper_day))
             bs_to_ad_tuple = self.converter.bs_to_ad((year_value, month_value, min(day_value, upper_day))) 
             value = self.converter.get_date_ad_label(bs_to_ad_tuple) if bs_to_ad_tuple else self.converter.get_today_ad_label()
         self.spinbutton_day.set_value(min(day_value, upper_day))
