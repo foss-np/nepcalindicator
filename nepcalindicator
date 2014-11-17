@@ -149,6 +149,9 @@ class NepaliDateConverter:
     bs[2098]=(31,31,32,31,31,31,29,30,29,30,29,31)
     bs[2099]=(31,31,32,31,31,31,30,29,29,30,30,30)
 
+    nepday = {'Sun': 'आइतवार', 'Mon': 'सोमवार', 'Tue':'मंगलवार',
+                'Wed':'बुधवार', 'Thu': 'बिहिवार', 'Fri': 'शुक्रवार', 'Sat': 'शनिवार'}
+
     @staticmethod
     def date_from_tuple(tuple_to_convert):
         '''
@@ -323,15 +326,13 @@ class NepaliDateConverter:
     def get_today_bs_label(self, short=False):
         nepday = None
         if short:
-            nepday = {'Sun': 'आइत', 'Mon': 'सोम', 'Tue':'मंगल',
-                'Wed':'बुध', 'Thu': 'बिहि', 'Fri': 'शुक्र', 'Sat': 'शनि'}
+            nepday = {k: v.replace("वार", "") for k, v in self.nepday.items()}
         today = self.get_date_bs_label(self.get_today_bs(), nepday)
         return today
 
     def get_date_bs_label(self, date_tuple, nepday=None):
         if nepday is None:
-            nepday = {'Sun': 'आइतवार', 'Mon': 'सोमवार', 'Tue':'मंगलवार',
-                'Wed':'बुधवार', 'Thu': 'बिहिवार', 'Fri': 'शुक्रवार', 'Sat': 'शनिवार'}
+            nepday = self.nepday
         (y, m, d, dd) = date_tuple
         day = nepday.get(dd)
         nepmonths = {1: "बैशाख", 2: "जेष्ठ", 3: "असार", 4:"श्रावण", 5:"भाद्र", 6:"असोज",
