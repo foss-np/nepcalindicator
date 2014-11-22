@@ -7,7 +7,7 @@ try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 import datetime
 import calendar
 
@@ -161,7 +161,7 @@ class NepaliDateConverter:
 
         '''
         (year, month, day) = tuple_to_convert
-        return datetime.date(year,month,day)
+        return datetime.date(year, month, day)
 
     @staticmethod
     def tuple_from_date(date_to_convert):
@@ -443,9 +443,14 @@ class NepaliDateIndicator:
         self.quit_item.connect("activate", self.quit)
         self.quit_item.show()
 
+    def set_date_label(self):
+        self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
+        return True
+
     def main(self):
         self.nep_date = NepaliDateConverter()
         self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
+        GObject.timeout_add_seconds(300, self.set_date_label)
         self.menu.append(self.to_bs_menu)
         self.menu.append(self.to_ad_menu)
         self.menu.append(self.quit_item)
@@ -460,7 +465,6 @@ class NepaliDateIndicator:
         win = ConverterDialog(title, adjustments, active_month-1)
         win.connect("delete-event", Gtk.main_quit)
         win.show_all()
-        Gtk.main()
     
     def create_month_store(self, months):
         self.month_store.clear()
@@ -489,5 +493,4 @@ class NepaliDateIndicator:
         self.create_window(title, (year_adjustment, self.month_store,  day_adjustment), today_month)
 
 if __name__ == "__main__":
-    indicator = NepaliDateIndicator()
-    indicator.main()
+    NepaliDateIndicator().main()
