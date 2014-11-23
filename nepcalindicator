@@ -10,6 +10,7 @@ except ImportError:
 from gi.repository import Gtk, GObject
 import datetime
 import calendar
+import time
 
 ### BEGIN LICENSE
 # Copyright (C) 2011 Shritesh Bhattarai shriteshb@gmail.com
@@ -444,13 +445,16 @@ class NepaliDateIndicator:
         self.quit_item.show()
 
     def set_date_label(self):
+        now = datetime.datetime.now()
         self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
+        if now.hour < 22:
+            time.sleep(7200)
         return True
 
     def main(self):
         self.nep_date = NepaliDateConverter()
         self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
-        GObject.timeout_add_seconds(300, self.set_date_label)
+        GObject.timeout_add_seconds(60, self.set_date_label)
         self.menu.append(self.to_bs_menu)
         self.menu.append(self.to_ad_menu)
         self.menu.append(self.quit_item)
