@@ -454,7 +454,7 @@ class NepaliDateIndicator:
     def main(self):
         self.nep_date = NepaliDateConverter()
         self.indicator.set_label(self.nep_date.get_today_bs_label(True), "")
-        GObject.timeout_add_seconds(60, self.set_date_label)
+        GObject.timeout_add_seconds(300, self.set_date_label)
         self.menu.append(self.to_bs_menu)
         self.menu.append(self.to_ad_menu)
         self.menu.append(self.quit_item)
