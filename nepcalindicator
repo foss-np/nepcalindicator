@@ -351,7 +351,7 @@ class NepaliDateConverter:
 
 class ConverterDialog(Gtk.Dialog):
     def __init__(self, title, adjustments, active_month):
-        Gtk.Dialog.__init__(self, title, None, 1)
+        Gtk.Dialog.__init__(self, title=title, parent=None, flags=1)
         self.set_default_size(200, 200)
         button = Gtk.Button("_Close", use_underline=True)
         button.connect("clicked", self.on_close_clicked)
@@ -465,6 +465,7 @@ class NepaliDateIndicator:
         win = ConverterDialog(title, adjustments, active_month-1)
         win.connect("delete-event", Gtk.main_quit)
         win.show_all()
+        Gtk.main()
     
     def create_month_store(self, months):
         self.month_store.clear()
