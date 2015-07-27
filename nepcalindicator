@@ -149,8 +149,8 @@ class NepaliDateConverter:
     bs[2098]=(31,31,32,31,31,31,29,30,29,30,29,31)
     bs[2099]=(31,31,32,31,31,31,30,29,29,30,30,30)
 
-    nepday = {'Sun': 'आइतवार', 'Mon': 'सोमवार', 'Tue':'मंगलवार',
-                'Wed':'बुधवार', 'Thu': 'बिहिवार', 'Fri': 'शुक्रवार', 'Sat': 'शनिवार'}
+    nepday = {'Sun': "आइतवार", 'Mon': "सोमवार", 'Tue': "मंगलवार",
+                'Wed': "बुधवार", 'Thu': "बिहिवार", 'Fri': "शुक्रवार", 'Sat': "शनिवार"}
 
     @staticmethod
     def date_from_tuple(tuple_to_convert):
@@ -224,7 +224,7 @@ class NepaliDateConverter:
             for days_in_month in self.bs[year]:
                 days = days + days_in_month
         #2) Subtract the days from first (n-1) months of the beginning year
-        for month in range(0,begin_month):
+        for month in range(begin_month):
             days = days - self.bs[begin_year][month]
         #3) Add the number of days from the last month of the beginning year
         days = days + self.bs[begin_year][12-1]
@@ -340,11 +340,15 @@ class NepaliDateConverter:
         return "{0} {1} {2}, {3}".format("".join(self.eng_to_nep_num(d)), nepmonths[m], "".join(self.eng_to_nep_num(y)), day)
 
     def get_date_ad_label(self, date_tuple):
-        return self.date_from_tuple(date_tuple).strftime("%A %-d %B, %Y")
+        return self.get_strftime(self.date_from_tuple(date_tuple))
+    
+    @staticmethod
+    def get_strftime(dt_obj):
+        return dt_obj.strftime("%A %-d %B, %Y")
 
     @staticmethod
     def get_today_ad_label():
-        return datetime.datetime.now().strftime("%A %-d %B, %Y")
+        return NepaliDateConverter.get_strftime(datetime.datetime.now())
         
 
         
