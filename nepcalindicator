@@ -474,7 +474,7 @@ class NepaliDateIndicator:
     def create_month_store(store, months):
         store.clear()
         for i, name in enumerate(months):
-            if i > 0:
+            if name:
                 store.append([i, name])
         return store
 
