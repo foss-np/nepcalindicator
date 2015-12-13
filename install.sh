@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-# only works for debian-base system
-apt-get install python-appindicator
+apt-get install gir1.2-appindicator3
 
-cp nepcalindicator.py /usr/local/bin
+cp nepcalindicator /usr/local/bin
 chmod a+x /usr/local/bin/nepcalindicator
