@@ -10,41 +10,51 @@ Displays current Nepali Date in Unity Panel.
 ### Installation
 Download the tarball: https://github.com/foss-np/nepcalindicator/archive/master.zip
 
-#### Install python-appindicator:
+#### Install gir1.2-appindicator3* [Gtk3 port of appindicator]:
 
 ```bash
-$ sudo apt-get install python-appindicator
+
+$ sudo apt-get install gir1.2-appindicator3* [Look for what package is available in repo. In 12.04 its gir1.2-appindicator3-0.1]
+
+**ALTHOUGH NOT RECOMMENDED**
+You can use gtk2 as well
+$ sudo apt-get install gir1.2-appindicator
+
+**Optionally**
+
+```bash
 $ chmod a+x install.sh
 $ sudo ./install.sh
 ```
 
 #### HOW-TO USE
 
+_**If install is run**_
+
 ```bash    
 $ nepcalindicator &
 ```
-
-### Extra
+or just execute from path of nepcalindicator.
 
 #### Convertor
 
-If you need a converter. You can use https://launchpad.net/nepdate. Which is integrated as converter menu as well.
+ - AD To BS
+ - BS To AD
+
+Embedded as  dialog window in menu
 
 
 #### Autostart indicator at Startup
 
-Install `gnome-session-properties` and add new entry for startup
+_`gnome-session-properties`_ package should be installed.
 
-```bash
-$ sudo apt-get install gnome-session-properties
-$ gksudo gnome-session-properties
-```        
+Go to session menu and click on startup applications..
 
 A new window appears. Follow the below process:
 
 - Click 'Add'
 - Enter following Informatino
     - Name: Nepali Calendar Indicator
-    - Command: /usr/local/bin/nepcalindicator
+    - Command: /usr/local/bin/nepcalindicator or Path/To/nepcalindicator
     - Click Add
     - Then Click Close
