@@ -397,7 +397,7 @@ class ConverterDialog(Gtk.Dialog):
         self.date_label.set_selectable(True)
         self.ad_to_bs = False
         value = self.converter.get_today_ad_label()
-        if  int(min(self.get_range_of_year)) == 1944:
+        if  int(min(self.get_range_of_year)) == min(NepaliDateConverter.bs.keys()):
             self.ad_to_bs = True
             value  = self.converter.get_today_bs_label()
         self.date_label.set_markup('<span foreground="blue" size="large">%s</span>' % value)
