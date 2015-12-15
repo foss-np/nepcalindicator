@@ -363,13 +363,7 @@ class ConverterDialog(Gtk.Dialog):
         self.box = self.get_content_area()
         year_adj, month_adj, self.day_adj = adjustments
         year_label = Gtk.Label("Year")
-        self.spinbutton_year = Gtk.SpinButton()
-        self.spinbutton_year.set_digits(0)
-        self.spinbutton_year.set_can_focus(False)
-        self.spinbutton_year.set_numeric(True)
-        self.spinbutton_year.set_update_policy(1)
-        self.spinbutton_year.set_adjustment(year_adj)
-        self.spinbutton_year.set_value(year_adj.get_value())
+        self.spinbutton_year = self.make_spinbutton(year_adj)
         self.box.add(year_label)
         self.box.add(self.spinbutton_year)
         month_label = Gtk.Label("Month")
@@ -381,13 +375,7 @@ class ConverterDialog(Gtk.Dialog):
         self.box.add(month_label)
         self.box.add(self.combobox_month)
         day_label = Gtk.Label("Day")
-        self.spinbutton_day = Gtk.SpinButton()
-        self.spinbutton_day.set_digits(0)
-        self.spinbutton_day.set_can_focus(False)
-        self.spinbutton_day.set_numeric(True)
-        self.spinbutton_day.set_update_policy(1)
-        self.spinbutton_day.set_adjustment(self.day_adj)
-        self.spinbutton_day.set_value(self.day_adj.get_value())
+        self.spinbutton_day = self.make_spinbutton(self.day_adj)
         self.box.add(day_label)
         self.box.add(self.spinbutton_day)
         self.spinbutton_year.connect("changed", self.show_converted_date)
@@ -411,6 +399,16 @@ class ConverterDialog(Gtk.Dialog):
         self.box.pack_start(button, True, True, 1)
         self.show_all()
 
+    @staticmethod
+    def make_spinbutton(adjustment):
+        spnbtn =  Gtk.SpinButton()
+        spnbtn.set_can_focus(False)
+        spnbtn.set_numeric(True)
+        spnbtn.set_update_policy(1)
+        spnbtn.set_adjustment(adjustment)
+        spnbtn.set_value(adjustment.get_value())
+        return spnbtn
+    
     def show_converted_date(self, widget):
         year_value =  self.spinbutton_year.get_value_as_int()
         month_value =  self.combobox_month.get_model()[self.combobox_month.get_active_iter()][0]
