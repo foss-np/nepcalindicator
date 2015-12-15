@@ -364,11 +364,12 @@ class ConverterDialog(Gtk.Dialog):
         year_adj, month_adj, self.day_adj = adjustments
         year_label = Gtk.Label("Year")
         self.spinbutton_year = Gtk.SpinButton()
+        self.spinbutton_year.set_digits(0)
         self.spinbutton_year.set_can_focus(False)
         self.spinbutton_year.set_numeric(True)
         self.spinbutton_year.set_update_policy(1)
         self.spinbutton_year.set_adjustment(year_adj)
-        self.spinbutton_year.set_value(int(year_adj.get_value()))
+        self.spinbutton_year.set_value(year_adj.get_value())
         self.box.add(year_label)
         self.box.add(self.spinbutton_year)
         month_label = Gtk.Label("Month")
@@ -381,11 +382,12 @@ class ConverterDialog(Gtk.Dialog):
         self.box.add(self.combobox_month)
         day_label = Gtk.Label("Day")
         self.spinbutton_day = Gtk.SpinButton()
+        self.spinbutton_day.set_digits(0)
         self.spinbutton_day.set_can_focus(False)
         self.spinbutton_day.set_numeric(True)
         self.spinbutton_day.set_update_policy(1)
         self.spinbutton_day.set_adjustment(self.day_adj)
-        self.spinbutton_day.set_value(int(self.day_adj.get_value()))
+        self.spinbutton_day.set_value(self.day_adj.get_value())
         self.box.add(day_label)
         self.box.add(self.spinbutton_day)
         self.spinbutton_year.connect("changed", self.show_converted_date)
@@ -478,6 +480,16 @@ class NepaliDateIndicator:
                 store.append([i, name])
         return store
 
+    def make_adjustment(self, value, lower=1, upper=32):
+        adj =  Gtk.Adjustment()
+        adj.set_lower(float(lower))
+        adj.set_upper(float(upper))
+        adj.set_value(float(value))
+        adj.set_step_increment(1.0)
+        adj.set_page_increment(10.0)
+        adj.set_page_size(0.0)
+        return adj
+    
     def show_ad_converter(self, widget):
         title = "Convert B.S Date To A.D."
         nep_months = (None, "Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Asoj", "Kartik", "Mangsir", "Poush", "Magh",  "Falgun", "Chaitra")
@@ -485,20 +497,18 @@ class NepaliDateIndicator:
         today_year, today_month, today_day, day_name = self.nep_date.get_today_bs()
         start_year = min(NepaliDateConverter.bs.keys())
         end_year = max(NepaliDateConverter.bs.keys())
-        end_month = 32
-        year_adjustment = Gtk.Adjustment(today_year, start_year, end_year, 1, 10, 0)
-        day_adjustment = Gtk.Adjustment(today_day, 1, end_month, 1, 10, 0)
+        year_adjustment = self.make_adjustment(today_year, lower=start_year, upper=end_year)
+        day_adjustment = self.make_adjustment(today_day)
         self.create_window(title, (year_adjustment, month_store,  day_adjustment), today_month)
 
     def show_bs_converter(self, widget):
         title = "Convert A.D. Date To B.S."
         month_store = self.create_month_store(Gtk.ListStore(int, str), calendar.month_name) 
-        start_year = NepaliDateConverter.ad_equiv[0]
+        start_year = max(NepaliDateConverter.ad_equiv)
         end_year = start_year + len(NepaliDateConverter.bs.keys())
-        end_month = 31
         today_year, today_month, today_day = self.nep_date.get_today_ad()
-        year_adjustment = Gtk.Adjustment(today_year, start_year, end_year, 1, 10, 0)
-        day_adjustment = Gtk.Adjustment(today_day, 1, end_month, 1, 10, 0)
+        year_adjustment = self.make_adjustment(today_year, lower=start_year, upper=end_year)
+        day_adjustment = self.make_adjustment(today_day, upper=31)
         self.create_window(title, (year_adjustment, month_store,  day_adjustment), today_month)
 
 if __name__ == "__main__":
