@@ -1,4 +1,6 @@
-# Nepali Calendar Unity Indicator
+## This has moved to [foss-np repo](https://github.com/foss-np/nepcalindicator)
+
+#Nepali Calendar Unity Indicator
 
 
 Displays current Nepali Date in Unity Panel.
