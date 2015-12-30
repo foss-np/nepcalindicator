@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
 import sys
@@ -171,8 +171,7 @@ class NepaliDateConverter:
         date_to_convert : A date object
 
         '''
-        if not isinstance(date_to_convert, (datetime.date, datetime.datetime)):
-            raise ValueError("date_to_convert should be date object")
+        assert isinstance(date_to_convert, (datetime.date, datetime.datetime)), "date_to_convert should be date object"
         return (date_to_convert.year, date_to_convert.month, date_to_convert.day)
         
     def count_ad_days(self,begin_ad_date,end_ad_date):
@@ -478,7 +477,8 @@ class NepaliDateIndicator:
                 store.append([i, name])
         return store
 
-    def make_adjustment(self, value, lower=1, upper=32):
+    @staticmethod
+    def make_adjustment(value, lower=1, upper=32):
         adj =  Gtk.Adjustment()
         adj.set_lower(float(lower))
         adj.set_upper(float(upper))
