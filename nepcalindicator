@@ -44,9 +44,7 @@ class NepaliDateConverter:
     bs_equiv, ad_equiv  : The B.S. and A.D. equivalent dates for counting and calculation
 
     '''
-
     (bs_equiv, ad_equiv) = ((2000,9,17),(1944,1,1))
-
     bs = {}
     bs[2000]=(30,32,31,32,31,30,30,30,29,30,29,31)
     bs[2001]=(31,31,32,31,31,31,30,29,30,29,30,30)
@@ -350,8 +348,6 @@ class NepaliDateConverter:
         return NepaliDateConverter.get_strftime(datetime.datetime.now())
         
 
-        
-
 class ConverterDialog(Gtk.Dialog):
     def __init__(self, title, adjustments, active_month):
         Gtk.Dialog.__init__(self, title=title, parent=None, flags=1)
@@ -366,7 +362,10 @@ class ConverterDialog(Gtk.Dialog):
         self.box.add(year_label)
         self.box.add(self.spinbutton_year)
         month_label = Gtk.Label("Month")
-        self.combobox_month = Gtk.ComboBox.new_with_model(month_adj)
+        self.combobox_month = Gtk.ComboBoxText()
+        for month in month_adj:
+            if month:
+                self.combobox_month.append_text(month)
         renderer_text = Gtk.CellRendererText()
         self.combobox_month.pack_start(renderer_text, True)
         self.combobox_month.set_active(active_month)
@@ -410,7 +409,7 @@ class ConverterDialog(Gtk.Dialog):
     
     def show_converted_date(self, widget):
         year_value =  self.spinbutton_year.get_value_as_int()
-        month_value =  self.combobox_month.get_model()[self.combobox_month.get_active_iter()][0]
+        month_value =  self.combobox_month.get_active() + 1
         day_value =  self.spinbutton_day.get_value_as_int()
         upper_day = self.converter.get_total_day_of_month(year_value, month_value, self.ad_to_bs)
         self.day_adj.set_upper(float(upper_day))
@@ -470,14 +469,6 @@ class NepaliDateIndicator:
         Gtk.main()
 
     @staticmethod
-    def create_month_store(store, months):
-        store.clear()
-        for i, name in enumerate(months):
-            if name:
-                store.append([i, name])
-        return store
-
-    @staticmethod
     def make_adjustment(value, lower=1, upper=32):
         adj =  Gtk.Adjustment()
         adj.set_lower(float(lower))
@@ -490,24 +481,22 @@ class NepaliDateIndicator:
     
     def show_ad_converter(self, widget):
         title = "Convert B.S Date To A.D."
-        nep_months = (None, "Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Asoj", "Kartik", "Mangsir", "Poush", "Magh",  "Falgun", "Chaitra")
-        month_store = self.create_month_store(Gtk.ListStore(int, str), nep_months) 
         today_year, today_month, today_day, day_name = self.nep_date.get_today_bs()
         start_year = min(NepaliDateConverter.bs.keys())
         end_year = max(NepaliDateConverter.bs.keys())
         year_adjustment = self.make_adjustment(today_year, lower=start_year, upper=end_year)
         day_adjustment = self.make_adjustment(today_day)
-        self.create_window(title, (year_adjustment, month_store,  day_adjustment), today_month)
+        nep_months = (None, "Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Asoj", "Kartik", "Mangsir", "Poush", "Magh",  "Falgun", "Chaitra")
+        self.create_window(title, (year_adjustment, nep_months, day_adjustment), today_month)
 
     def show_bs_converter(self, widget):
         title = "Convert A.D. Date To B.S."
-        month_store = self.create_month_store(Gtk.ListStore(int, str), calendar.month_name) 
         start_year = max(NepaliDateConverter.ad_equiv)
         end_year = start_year + len(NepaliDateConverter.bs.keys())
         today_year, today_month, today_day = self.nep_date.get_today_ad()
         year_adjustment = self.make_adjustment(today_year, lower=start_year, upper=end_year)
         day_adjustment = self.make_adjustment(today_day, upper=31)
-        self.create_window(title, (year_adjustment, month_store,  day_adjustment), today_month)
+        self.create_window(title, (year_adjustment, calendar.month_name,  day_adjustment), today_month)
 
 if __name__ == "__main__":
     NepaliDateIndicator().main()
