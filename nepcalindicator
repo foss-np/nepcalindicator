@@ -429,6 +429,7 @@ class ConverterDialog(Gtk.Dialog):
         self.destroy()
         
 class NepaliDateIndicator:
+    win = None
     def __init__(self):
         self.indicator = AppIndicator.Indicator.new("nepali-date-indicator",
                                            "calendar-tray",
@@ -467,8 +468,13 @@ class NepaliDateIndicator:
         sys.exit(0)
 
     def create_window(self, title, adjustments, active_month):
-        win = ConverterDialog(title, adjustments, active_month-1)
-        win.connect("delete-event", Gtk.main_quit)
+        if self.win:
+            if self.win.get_title() != title:
+                self.win.destroy()
+            else:
+                return
+        self.win = ConverterDialog(title, adjustments, active_month-1)
+        self.win.connect("delete-event", Gtk.main_quit)
         Gtk.main()
 
     @staticmethod
