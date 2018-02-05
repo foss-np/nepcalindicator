@@ -469,6 +469,7 @@ class NepaliDateIndicator:
         if self.win:
             if self.win.get_title() != title:
                 self.win.destroy()
+                self.win = None
             else:
                 return
         self.win = ConverterDialog(title, adjustments, active_month-1)
