@@ -352,7 +352,7 @@ class ConverterDialog(Gtk.Dialog):
     def __init__(self, title, adjustments, active_month):
         Gtk.Dialog.__init__(self, title=title, parent=None, flags=1)
         self.set_resizable(False)
-        self.set_default_size(250, 200)
+        self.set_size_request(200, 200)
         button = Gtk.Button("_Close", use_underline=True)
         button.connect("clicked", self.on_close_clicked)
         self.box = self.get_content_area()
@@ -469,8 +469,7 @@ class NepaliDateIndicator:
         if self.win:
             if self.win.get_title() != title:
                 self.win.destroy()
-                self.win = None
-            else:
+            elif self.win.is_visible():
                 return
         self.win = ConverterDialog(title, adjustments, active_month-1)
         self.win.connect("delete-event", Gtk.main_quit)
