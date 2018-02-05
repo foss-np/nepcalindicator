@@ -352,7 +352,7 @@ class ConverterDialog(Gtk.Dialog):
     def __init__(self, title, adjustments, active_month):
         Gtk.Dialog.__init__(self, title=title, parent=None, flags=1)
         self.set_resizable(False)
-        self.set_default_size(200, 200)
+        self.set_default_size(250, 200)
         button = Gtk.Button("_Close", use_underline=True)
         button.connect("clicked", self.on_close_clicked)
         self.box = self.get_content_area()
@@ -383,11 +383,12 @@ class ConverterDialog(Gtk.Dialog):
         self.get_range_of_year = self.spinbutton_year.get_range()
         self.date_label = Gtk.Label()
         self.date_label.set_selectable(True)
-        self.ad_to_bs = False
-        value = self.converter.get_today_ad_label()
-        if  int(min(self.get_range_of_year)) == max(NepaliDateConverter.ad_equiv):
+        if  int(min(self.get_range_of_year)) == 1944:
             self.ad_to_bs = True
             value  = self.converter.get_today_bs_label()
+        else:
+            self.ad_to_bs = False
+            value = self.converter.get_today_ad_label()
         self.date_label.set_markup('<span foreground="blue" size="large">%s</span>' % value)
         self.box.pack_start(Gtk.HSeparator(), True, True, 1)
         self.box.pack_start(Gtk.HSeparator(), True, True, 1)
@@ -426,6 +427,7 @@ class ConverterDialog(Gtk.Dialog):
         self.destroy()
         
 class NepaliDateIndicator:
+    win = None
     def __init__(self):
         self.indicator = AppIndicator.Indicator.new("nepali-date-indicator",
                                            "calendar-tray",
@@ -464,8 +466,13 @@ class NepaliDateIndicator:
         sys.exit(0)
 
     def create_window(self, title, adjustments, active_month):
-        win = ConverterDialog(title, adjustments, active_month-1)
-        win.connect("delete-event", Gtk.main_quit)
+        if self.win:
+            if self.win.get_title() != title:
+                self.win.destroy()
+            else:
+                return
+        self.win = ConverterDialog(title, adjustments, active_month-1)
+        self.win.connect("delete-event", Gtk.main_quit)
         Gtk.main()
 
     @staticmethod
