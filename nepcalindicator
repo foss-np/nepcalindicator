@@ -371,12 +371,20 @@ class ConverterDialog(Gtk.Dialog):
         self.combobox_month.set_active(active_month)
         self.combobox_month.add_attribute(renderer_text, "text", 1)
         self.box.add(month_label)
-        self.box.add(self.combobox_month)
+        box = Gtk.HBox()
+        self.goto_prev_button = Gtk.Button.new_with_label('<<')
+        self.goto_prev_button.connect("clicked", self.on_prev_clicked)
+        self.goto_next_button = Gtk.Button.new_with_label('>>')
+        self.goto_next_button.connect("clicked", self.on_next_clicked)
+        box.add(self.goto_prev_button)
+        box.add(self.combobox_month)
+        box.add(self.goto_next_button)
+        self.box.add(box)
+        self.spinbutton_year.connect("changed", self.show_converted_date)
         day_label = Gtk.Label("Day")
         self.spinbutton_day = self.make_spinbutton(self.day_adj)
         self.box.add(day_label)
         self.box.add(self.spinbutton_day)
-        self.spinbutton_year.connect("changed", self.show_converted_date)
         self.combobox_month.connect("changed", self.show_converted_date)
         self.spinbutton_day.connect("changed", self.show_converted_date)
         self.converter = NepaliDateConverter()
@@ -408,6 +416,32 @@ class ConverterDialog(Gtk.Dialog):
         spnbtn.set_value(adjustment.get_value())
         return spnbtn
     
+    def set_prev_next_value(self, prev=True):
+        year_value =  self.spinbutton_year.get_value_as_int()
+        month_value =  self.combobox_month.get_active()
+        day_value =  self.spinbutton_day.get_value_as_int()
+        if prev:
+            if month_value == 0:
+                year_value -= 1
+                month_value = 11
+                self.spinbutton_year.set_value(year_value)
+            else:
+                month_value -= 1
+        else:
+            if month_value == 11:
+                year_value += 1
+                month_value = 0
+                self.spinbutton_year.set_value(year_value)
+            else:
+                month_value += 1
+        self.combobox_month.set_active(month_value)
+    
+    def on_prev_clicked(self, button):
+        self.set_prev_next_value()
+    
+    def on_next_clicked(self, button):
+        self.set_prev_next_value(prev=False)
+            
     def show_converted_date(self, widget):
         year_value =  self.spinbutton_year.get_value_as_int()
         month_value =  self.combobox_month.get_active() + 1
