@@ -4,7 +4,7 @@
 import sys
 #try which gir is available prioritising Gtk3
 try:
-    from gi.repository import AyatanaAppIndicator3 as AppIndicator
+    from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
 from gi.repository import Gtk, GObject
