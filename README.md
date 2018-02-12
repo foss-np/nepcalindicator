@@ -5,7 +5,16 @@ Displays current Nepali Date in Unity Panel.
 
 **Indicator in Action**
 
+___Status___
+
 ![Indicator in Action](nepcalimg.png)
+
+___Dialogs___
+
+
+| BS To Ad | AD to BS |
+| --- | --- |
+| ![BSTOAD](adtobs.png) | ![ADTOBS](bstoad.png) |
 
 ### Installation
 Download the tarball: https://github.com/foss-np/nepcalindicator/archive/master.zip
