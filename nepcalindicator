@@ -643,7 +643,6 @@ class ConverterDialog(Gtk.Dialog):
         if show_cal:
             self.show_converted_date(button, user_data)
 
-
     def on_close_clicked(self, button):
         self.destroy()
 
