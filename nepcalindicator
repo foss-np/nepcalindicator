@@ -400,9 +400,9 @@ class ConverterDialog(Gtk.Dialog):
             return
         ad_to_bs_tuple = self.converter.ad_to_bs((date.year, date.month+1, date.day))
         value = self.converter.get_date_bs_label(ad_to_bs_tuple)
-        value = '<span background="white" foreground="green" size="large">%s</span>' % value
+        value = '<span foreground="green" size="large">%s</span>' % value
         today = datetime.date.today()
-        if today.year != date.year or today.day != date.day or today.month != (date.month+1):
+        if today != datetime.date(year=date.year, month=(date.month+1), day=date.day):
             value += "\n<span foreground='purple'><small><i>{}: {}</i></small></span>".format(today.strftime("%b %d, %Y"), self.converter.get_today_bs_label())
         self.date_label.set_markup(value)
         
@@ -455,7 +455,7 @@ class ConverterDialog(Gtk.Dialog):
             ddl.connect('clicked', self.on_day_button_clicked, i)
             ddl.set_label(label)
             if today == i:
-                label = '<span background="white" foreground="blue" size="large">%s</span>' % label
+                label = '<span foreground="blue" size="large">%s</span>' % label
                 lab = ddl.get_child()
                 lab.set_markup(label)
                 ddl.set_sensitive(False)
@@ -532,7 +532,7 @@ class ConverterDialog(Gtk.Dialog):
             self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
             self.nepali_cal_flowbox()
             self.box.add(self.flowbox)
-        self.date_label.set_markup('<span background="white" foreground="green" size="large">%s</span>' % value)
+        self.date_label.set_markup('<span foreground="green" size="large">%s</span>' % value)
         self.box.pack_start(Gtk.HSeparator(), True, True, 1)
         self.box.pack_start(Gtk.HSeparator(), True, True, 1)
         self.box.add(self.date_label)
@@ -643,7 +643,6 @@ class ConverterDialog(Gtk.Dialog):
         if show_cal:
             self.show_converted_date(button, user_data)
 
-
     def on_close_clicked(self, button):
         self.destroy()
 
@@ -665,7 +664,7 @@ class ConverterDialog(Gtk.Dialog):
         upper_day = self.converter.get_total_day_of_month(year_value, month_value-1, False)
         bs_to_ad_tuple = self.converter.bs_to_ad((year_value, month_value, min(day_value, upper_day))) 
         value = self.converter.get_date_ad_label(bs_to_ad_tuple) if bs_to_ad_tuple else self.converter.get_today_ad_label()
-        self.date_label.set_markup('<span background="white" foreground="green" size="large">%s</span>' % value)
+        self.date_label.set_markup('<span foreground="green" size="large">%s</span>' % value)
         self.nepali_cal_flowbox(today=day_value, month=month_value, year=year_value, today_ad=self.converter.date_from_tuple(bs_to_ad_tuple))
         
 class NepaliDateIndicator:
